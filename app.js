@@ -1,12 +1,12 @@
-const Time = require('./heads/time');
-const Utils = require('./heads/utils');
-const Thermo = require('./heads/thermo');
 const express = require('express');
 const cors = require('cors');
 const Constants = require('./constants');
 const net = require('net');
+const fs = require('fs');
 
-const heads = [Time, Utils, Thermo];
+const heads = fs.readdirSync(__dirname + '/heads').map((file) => {
+    return require('./heads/' + file);
+});
 
 heads.forEach((head) => {
     head.initialize();

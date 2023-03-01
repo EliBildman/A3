@@ -1,7 +1,56 @@
 const Manager = require('../managers/head-manager');
 const Constants = require('../constants');
 
+const data_cache = {};
+
 const events = {};
+
+const cache = {
+    name: 'cache',
+    triggers: [],
+    input: [
+        {
+            name: 'field',
+            type: Constants.TYPES.STRING,
+            input: Constants.INPUT.RAW,
+        },
+        {
+            name: 'value',
+            type: Constants.TYPES.ANY,
+            input: Constants.INPUT.EITHER,
+        },
+    ],
+    output: [],
+    run: (_, payload, props) => {
+        const field = props.field;
+        const value = Manager.getValue(props.value, payload);
+        data_cache[field] = value;
+    },
+    direct_connections: true,
+};
+
+const decache = {
+    name: 'decache',
+    triggers: [],
+    input: [
+        {
+            name: 'field',
+            type: Constants.TYPES.STRING,
+            input: Constants.INPUT.RAW,
+        },
+    ],
+    output: [
+        {
+            name: '!field',
+            type: Constants.TYPES.ANY,
+        },
+    ],
+    run: (_, payload, props) => {
+        const field = props.field;
+        payload[field] = data_cache[field];
+    },
+    direct_connections: true,
+};
 
 const set = {
     name: 'set',
@@ -112,7 +161,7 @@ const print = {
         },
     ],
     output: [],
-    run: (triggers, payload, props) => {
+    run: (_, payload, props) => {
         if (props.value == '') {
             console.log(payload);
             return;
@@ -123,62 +172,34 @@ const print = {
     direct_connections: true,
 };
 
-const foo = {
-    name: 'foo',
+const wait = {
+    name: 'wait',
     triggers: [],
     input: [
         {
-            name: 'alpha',
-            type: Constants.TYPES.STRING,
-            input: Constants.INPUT.RAW,
-        },
-        {
-            name: 'beta',
+            name: 'time',
             type: Constants.TYPES.NUMBER,
             input: Constants.INPUT.RAW,
         },
-        {
-            name: 'treta',
-            type: Constants.TYPES.ENUM,
-            input: Constants.INPUT.RAW,
-            options: ['one', 'two', 'three'],
-        },
-        {
-            name: 'delta',
-            type: Constants.TYPES.BOOL,
-            input: Constants.INPUT.RAW,
-        },
-        {
-            name: 'eatme',
-            type: Constants.TYPES.ANY,
-            input: Constants.INPUT.RAW,
-        },
-        {
-            name: 'stonk',
-            type: Constants.TYPES.ANY,
-            input: Constants.INPUT.EITHER,
-        },
     ],
-    output: [
-        {
-            name: 'getta',
-            type: Constants.TYPES.NUMBER,
-        },
-        {
-            name: 'keyta',
-            type: Constants.TYPES.STRING,
-        },
-    ],
-    run: (triggers, payload, props) => {},
+    output: [],
+    run: (_, payload, props) => {
+        const time = props.time;
+        return new Promise((res, rej) => {
+            setTimeout(res, time);
+        });
+    },
     direct_connections: true,
 };
 
 const actions = {
+    wait,
     set,
     fork,
     if: _if,
     print,
-    foo,
+    cache,
+    decache,
 };
 
 const sockets = {};

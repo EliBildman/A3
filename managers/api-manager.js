@@ -37,7 +37,7 @@ const loadPages = () => {
     });
 };
 
-module.exports.runFragment = (id, payload, depth) => {
+module.exports.runFragment = async (id, payload, depth) => {
     if (!payload) payload = {};
     if (!depth) depth = 0;
     if (depth > MAX_DEPTH) {
@@ -48,7 +48,8 @@ module.exports.runFragment = (id, payload, depth) => {
     }
 
     const frag = fragments.find((f) => f.id == id);
-    frag.routine.forEach((info) => {
+
+    for (const info of frag.routine) {
         const action = ActionManager.getAction(
             info.action.head,
             info.action.name
@@ -65,8 +66,10 @@ module.exports.runFragment = (id, payload, depth) => {
             };
         });
 
-        action.run(triggers, payload, info.params);
-    });
+        await action.run(triggers, payload, info.params);
+    }
+
+    // frag.routine.forEach((info) => {
 };
 
 module.exports.getPage = (ind) => {
