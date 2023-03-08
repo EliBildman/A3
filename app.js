@@ -3,6 +3,7 @@ const cors = require('cors');
 const Constants = require('./constants');
 const net = require('net');
 const fs = require('fs');
+require('dotenv').config();
 
 const heads = fs.readdirSync(__dirname + '/heads').map((file) => {
     return require('./heads/' + file);

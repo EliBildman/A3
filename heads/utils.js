@@ -147,7 +147,7 @@ const _if = {
             return;
         }
     },
-    direct_connections: false,
+    direct_connections: true,
 };
 
 const print = {
@@ -172,28 +172,7 @@ const print = {
     direct_connections: true,
 };
 
-const wait = {
-    name: 'wait',
-    triggers: [],
-    input: [
-        {
-            name: 'time',
-            type: Constants.TYPES.NUMBER,
-            input: Constants.INPUT.RAW,
-        },
-    ],
-    output: [],
-    run: (_, payload, props) => {
-        const time = props.time;
-        return new Promise((res, rej) => {
-            setTimeout(res, time);
-        });
-    },
-    direct_connections: true,
-};
-
 const actions = {
-    wait,
     set,
     fork,
     if: _if,

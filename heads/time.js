@@ -35,11 +35,33 @@ const onSchedule = {
     ],
 };
 
+const wait = {
+    name: 'wait',
+    triggers: [],
+    input: [
+        {
+            name: 'time',
+            type: Constants.TYPES.NUMBER,
+            input: Constants.INPUT.RAW,
+        },
+    ],
+    output: [],
+    run: (_, payload, props) => {
+        const time = props.time;
+        return new Promise((res, rej) => {
+            setTimeout(res, time ?? 0);
+        });
+    },
+    direct_connections: true,
+};
+
 const events = {
     onSchedule,
 };
 
-const actions = {};
+const actions = {
+    wait,
+};
 const sockets = {};
 
 const head = {

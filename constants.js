@@ -12,3 +12,5 @@ module.exports.INPUT = {
     VARIABLE: 1,
     EITHER: 2,
 };
+
+module.exports.LOOKUP_FLAG = '!';

@@ -2,6 +2,8 @@ const Manager = require('../managers/head-manager');
 const Constants = require('../constants');
 const { Client } = require('tplink-smarthome-api');
 
+const log = require('../loggers').HeadLogger('TpPlug');
+
 const plugs = {};
 
 const events = {};
@@ -69,7 +71,7 @@ module.exports.initialize = () => {
     };
     client.startDiscovery(discoveryOptions).on('device-new', (device) => {
         if (device.type === 'IOT.SMARTPLUGSWITCH') {
-            console.log('Plug found: ' + device.alias);
+            log.info('Plug found: ' + device.alias);
             plugs[device.alias] = device;
         }
     });

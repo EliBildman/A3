@@ -1,6 +1,7 @@
 const EventManager = require('./event-manager');
 const ActionManager = require('./action-manager');
 const SocketManager = require('./socket-manager');
+const { LOOKUP_FLAG } = require('../constants');
 
 const heads = [];
 
@@ -22,7 +23,7 @@ module.exports.register = (head) => {
 // payload values look like: !field_name
 // (raw: any) => any
 module.exports.getValue = (raw, payload) => {
-    if (typeof raw != 'string' || raw.charAt(0) != '!') return raw;
+    if (typeof raw !== 'string' || raw.charAt(0) !== LOOKUP_FLAG) return raw;
 
     // is a payload value
     const name = raw.substring(1);
@@ -31,4 +32,12 @@ module.exports.getValue = (raw, payload) => {
     }
 
     return payload[name];
+};
+
+// for variable inputs, rip off lookup flag
+module.exports.getField = (raw) => {
+    if (raw.charAt(0) === LOOKUP_FLAG) {
+        return raw.substring(1);
+    }
+    return raw;
 };

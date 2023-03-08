@@ -8,9 +8,9 @@ const substring = {
     triggers: [],
     input: [
         {
-            name: 'field',
+            name: 'string',
             type: Constants.TYPES.STRING,
-            input: Constants.INPUT.RAW,
+            input: Constants.INPUT.VARIABLE,
         },
         {
             name: 'start',
@@ -25,17 +25,21 @@ const substring = {
     ],
     output: [
         {
-            name: '!field',
+            name: '!string',
             type: Constants.TYPES.STRING,
         },
     ],
     run: (triggers, payload, props) => {
-        const field = props.field;
+        const string = Manager.getValue(props.string, payload);
+        const str_field = Manager.getField(props.string);
         const start = props.start;
         const end = props.end;
-        const str = payload[field];
 
-        payload[field] = str.substring(start, end);
+        if (end !== null && end !== undefined) {
+            payload[str_field] = string.substring(start, end);
+        } else {
+            payload[str_field] = string.substring(start);
+        }
     },
     direct_connections: true,
 };
@@ -71,9 +75,43 @@ const contains = {
     direct_connections: true,
 };
 
+const charAt = {
+    name: 'charAt',
+    triggers: [],
+    input: [
+        {
+            name: 'string',
+            type: Constants.TYPES.STRING,
+            input: Constants.INPUT.VARIABLE,
+        },
+        {
+            name: 'index',
+            type: Constants.TYPES.STRING,
+            input: Constants.INPUT.RAW,
+        },
+    ],
+    output: [
+        {
+            name: 'char',
+            type: Constants.TYPES.STRING,
+        },
+    ],
+    run: (triggers, payload, props) => {
+        const string = Manager.getValue(props.string, payload);
+        const index = props.index;
+        let char = '';
+        if (string) {
+            char = string.charAt(index);
+        }
+        payload.char = char;
+    },
+    direct_connections: true,
+};
+
 const actions = {
     substring,
     contains,
+    charAt,
 };
 
 const sockets = {};
