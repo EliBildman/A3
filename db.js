@@ -1,6 +1,6 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
-const CREDS_PATH = './ssl/X509-cert-3280982075085217638.pem';
+const CREDS_PATH = `./ssl/${process.env.CREDS_FILE}`;
 const DB_NAME = 'a3';
 
 let database = null;
