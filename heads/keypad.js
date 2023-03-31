@@ -17,7 +17,15 @@ const onCode = {
         },
     ],
     fire: () => {}, // gets set in registration
-    output: [],
+    output: [
+        {
+            name: 'name',
+            type: Constants.TYPES.STRING,
+        }, {
+            name: 'code',
+            type: Constants.TYPES.STRING,
+        }
+    ],
 };
 
 const events = {
