@@ -1,4 +1,5 @@
 const SocketManager = require('../managers/tcp-manager');
+const log = require('../loggers/system-logger');
 
 const DELIM = '\n';
 
@@ -22,7 +23,7 @@ const write = (socket, message) => {
 // i can use OOP if i want to eat me
 const createDevice = (socket, hb_int) => {
   let message_callback = (_) => {
-    console.log('unset message callback');
+    log.info('unset message callback');
   };
 
   let close_callback = () => {};
@@ -32,7 +33,7 @@ const createDevice = (socket, hb_int) => {
   const setHeartbeatTimeout = () => {
     clearTimeout(heartbeatTimeout);
     heartbeatTimeout = setTimeout(() => {
-      console.log('Heartbeat timeout');
+      log.info('Heartbeat timeout');
       socket.destroy();
     }, hb_int * 2);
   };
@@ -45,7 +46,7 @@ const createDevice = (socket, hb_int) => {
     },
     onMessage: (message) => {
       if (message === 'HEARTBEAT') {
-        // console.log('Heartbeat renew');
+        // log.info('Heartbeat renew');
         setHeartbeatTimeout();
         return;
       }
@@ -68,7 +69,7 @@ const createDevice = (socket, hb_int) => {
 };
 
 const onConnection = (socket) => {
-  console.log(`connection from ${socket.remoteAddress}:${socket.remotePort}`);
+  log.info(`connection from ${socket.remoteAddress}:${socket.remotePort}`);
 
   let route = null;
   let hb_int = null;

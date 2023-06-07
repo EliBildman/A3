@@ -4,53 +4,71 @@ const log = require('../loggers/head-logger')('Keypad');
 
 let devices = {};
 
-// fired every time temperature changes
-const onCode = {
-  name: 'onCode',
+const onActive = {
+  name: 'onActive',
   props: [
     {
-      name: 'code',
-      type: Constants.TYPES.STRING,
-    },
-    {
-      name: 'pad_name',
+      name: 'sensor_name',
       type: Constants.TYPES.STRING,
     },
   ],
   fire: () => {}, // gets set in registration
   output: [
     {
-      name: 'name',
+      name: 'sensor_name',
       type: Constants.TYPES.STRING,
     },
+  ],
+};
+
+const onInactive = {
+  name: 'onInactive',
+  props: [
     {
-      name: 'code',
+      name: 'sensor_name',
+      type: Constants.TYPES.STRING,
+    },
+  ],
+  fire: () => {}, // gets set in registration
+  output: [
+    {
+      name: 'sensor_name',
       type: Constants.TYPES.STRING,
     },
   ],
 };
 
 const events = {
-  onCode,
+  onActive,
+  onInactive,
 };
 
 const actions = {};
 
 const getMessageHandler = (device) => (message) => {
-  onCode.fire(
-    (props) => {
-      // optional name, can be null
-      return (
-        (!props.pad_name || props.name === device.name) &&
-        (!props.code || props.code === message)
-      );
-    },
-    { name: device.name, code: message }
-  );
+  if (message == 'ACTIVE') {
+    log.info(`${device.name} active`);
+    onActive.fire(
+      (props) => {
+        // optional name, can be null
+        return !props.sensor_name || props.sensor_name === device.name;
+      },
+      { sensor_name: device.name }
+    );
+  }
+  if (message == 'INACTIVE') {
+    log.info(`${device.name} inactive`);
+    onInactive.fire(
+      (props) => {
+        return !props.sensor_name || props.sensor_name === device.name;
+      },
+      { sensor_name: device.name }
+    );
+  }
 };
 
 const keypad_socket = {
-  id: 'keypad_socket',
+  id: 'motion_socket',
   onConnect: (device, initial_message) => {
     device.name = initial_message; // init message is name
     devices[device.name] = device;
@@ -59,7 +77,7 @@ const keypad_socket = {
       delete devices[device.name];
       log.info(`${device.name} closed`);
     });
-    log.info(`Connected Keypad: ${device.name}`);
+    log.info(`Connected Motion Sensor: ${device.name}`);
   },
 };
 
@@ -68,7 +86,7 @@ const sockets = {
 };
 
 const head = {
-  name: 'Keypad',
+  name: 'Motion',
   events,
   actions,
   sockets,
