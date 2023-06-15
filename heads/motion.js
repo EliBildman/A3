@@ -71,7 +71,9 @@ const inactiveTime = {
   direct_connections: true,
 };
 
-const actions = {};
+const actions = {
+  inactiveTime,
+};
 
 const getMessageHandler = (device) => (message) => {
   if (message == 'ACTIVE') {
