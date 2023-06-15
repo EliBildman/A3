@@ -43,8 +43,8 @@ const events = {
   onInactive,
 };
 
-const getLastActive = {
-  name: 'getLastActive',
+const inactiveTime = {
+  name: 'inactiveTime',
   triggers: [],
   input: [
     {
@@ -55,14 +55,17 @@ const getLastActive = {
   ],
   output: [
     {
-      name: 'lastActiveTime',
+      name: 'timeInactive',
       type: Constants.TYPES.NUMBER,
     },
   ],
   run: async (triggers, payload, props) => {
     const name = props.name;
     if (name in devices) {
-      payload.lastActiveTime = devices[name].lastActive;
+      const now = new Date().getTime();
+      payload.timeInactive = now - devices[name].lastActive;
+    } else {
+      log.error(`Invalid device name: ${name}`);
     }
   },
   direct_connections: true,
