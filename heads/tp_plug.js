@@ -48,9 +48,53 @@ const off = {
   direct_connections: true,
 };
 
+const store = {
+  name: 'store',
+  triggers: [],
+  input: [
+    {
+      name: 'name',
+      type: Constants.TYPES.STRING,
+      input: Constants.INPUT.RAW,
+    },
+  ],
+  output: [],
+  run: async (triggers, payload, props) => {
+    const name = props.name;
+    if (name in plugs) {
+      const state = await plugs[name].getPowerState();
+      plugs[name].storedState = state;
+    }
+  },
+  direct_connections: true,
+};
+
+const restore = {
+  name: 'restore',
+  triggers: [],
+  input: [
+    {
+      name: 'name',
+      type: Constants.TYPES.STRING,
+      input: Constants.INPUT.RAW,
+    },
+  ],
+  output: [],
+  run: async (triggers, payload, props) => {
+    const name = props.name;
+    if (name in plugs) {
+      const state = plugs[name].storedState;
+      plugs[name].setPowerState(state);
+    }
+  },
+  direct_connections: true,
+};
+
 const actions = {
   on,
   off,
+  store,
+  restore,
 };
 
 const sockets = {};
@@ -73,6 +117,7 @@ module.exports.initialize = () => {
     if (device.type === 'IOT.SMARTPLUGSWITCH') {
       log.info('Plug found: ' + device.alias);
       plugs[device.alias] = device;
+      device.storedState = false; // initial store
     }
   });
 };

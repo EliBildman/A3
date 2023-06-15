@@ -1,6 +1,6 @@
 const Manager = require('../managers/head-manager');
 const Constants = require('../constants');
-const log = require('../loggers/head-logger')('Keypad');
+const log = require('../loggers/head-logger')('Motion');
 
 let devices = {};
 
@@ -43,11 +43,37 @@ const events = {
   onInactive,
 };
 
+const getLastActive = {
+  name: 'getLastActive',
+  triggers: [],
+  input: [
+    {
+      name: 'name',
+      type: Constants.TYPES.STRING,
+      input: Constants.INPUT.RAW,
+    },
+  ],
+  output: [
+    {
+      name: 'lastActiveTime',
+      type: Constants.TYPES.NUMBER,
+    },
+  ],
+  run: async (triggers, payload, props) => {
+    const name = props.name;
+    if (name in devices) {
+      payload.lastActiveTime = devices[name].lastActive;
+    }
+  },
+  direct_connections: true,
+};
+
 const actions = {};
 
 const getMessageHandler = (device) => (message) => {
   if (message == 'ACTIVE') {
     log.info(`${device.name} active`);
+    device.lastActive = new Date().getTime();
     onActive.fire(
       (props) => {
         // optional name, can be null
@@ -67,22 +93,23 @@ const getMessageHandler = (device) => (message) => {
   }
 };
 
-const keypad_socket = {
+const motion_socket = {
   id: 'motion_socket',
   onConnect: (device, initial_message) => {
     device.name = initial_message; // init message is name
+    device.lastActive = new Date().getTime();
     devices[device.name] = device;
     device.setMessageCallback(getMessageHandler(device));
     device.setCloseCallback(() => {
       delete devices[device.name];
       log.info(`${device.name} closed`);
     });
-    log.info(`Connected Motion Sensor: ${device.name}`);
+    log.info(`Connected Sensor: ${device.name}`);
   },
 };
 
 const sockets = {
-  keypad_socket,
+  keypad_socket: motion_socket,
 };
 
 const head = {
