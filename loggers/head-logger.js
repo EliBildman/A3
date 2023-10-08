@@ -7,14 +7,14 @@ module.exports = (name) => {
     level: process.env.LOG_LEVEL,
     defaultMeta: { category: 'head' },
     transports: [
-      new transports.File({
-        format: format.combine(
-          format.label({ label: name, message: false }),
-          format.timestamp({ format: 'MM:DD:YYYY HH:mm:ss' }),
-          format.json()
-        ),
-        filename: `./${process.env.LOG_FILE}`,
-      }),
+      // new transports.File({
+      //   format: format.combine(
+      //     format.label({ label: name, message: false }),
+      //     format.timestamp({ format: 'MM:DD:YYYY HH:mm:ss' }),
+      //     format.json()
+      //   ),
+      //   filename: `./${process.env.LOG_FILE}`,
+      // }),
       new transports.Console({
         format: format.combine(
           format.label({ label: name }),
