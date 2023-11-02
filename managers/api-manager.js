@@ -68,8 +68,6 @@ module.exports.runFragment = async (id, payload, depth) => {
 
     await action.run(triggers, payload, info.params);
   }
-
-  // frag.routine.forEach((info) => {
 };
 
 module.exports.getPage = (ind) => {
