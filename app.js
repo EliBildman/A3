@@ -1,12 +1,11 @@
 const express = require('express');
-const cors = require('cors');
 const Constants = require('./constants');
+const cors = require('cors');
 const net = require('net');
 const fs = require('fs');
 const socketio = require('socket.io');
 require('dotenv').config();
-
-const log = require('./loggers/system-logger');
+const log = require('./logging/loggers/system-logger');
 
 const heads = fs.readdirSync(__dirname + '/heads').map((file) => {
   return require('./heads/' + file);
@@ -65,7 +64,7 @@ const io = socketio(http_server, {
 const socket_manager = require('./managers/socket-manager');
 
 io.on('connection', (socket) => {
-  log.info('a user connected');
+  log.verbose('A User Connected');
   socket_manager.register(socket);
 });
 

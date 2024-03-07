@@ -1,18 +1,18 @@
 const SocketManager = require('../managers/tcp-manager');
-const log = require('../loggers/system-logger');
+const log = require('../logging/loggers/system-logger');
 
 const DELIM = '\n';
 
 // REGISTRATON HANDSHAKE:
 // server: 'CONNECTION_CONFIRM'
-// clinet: '<socket-id>'
+// client: '<socket-id>'
 // server: 'SOCKET_ID_CONFIRM' | 'ERROR'
 // client: '<hb_interval>'
 // server: 'HB_CONFIRM' | 'ERROR'
 // client: [initial message sent to head]
 // -- socket is given to head --
 
-// ^ this is a dope way to do it i dont hear the haters
+// this file sucks
 
 const routes = SocketManager.getRoutes();
 
@@ -20,22 +20,26 @@ const write = (socket, message) => {
   socket.write(message + DELIM);
 };
 
-// i can use OOP if i want to eat me
 const createDevice = (socket, hb_int) => {
+  log.info(`Created Device ${socket.remoteAddress}:${socket.remotePort}`);
+  log.debug(`Heartbeat Interval for ${socket.remoteAddress}: ${hb_int}`);
+
   let message_callback = (_) => {
-    log.info('unset message callback');
+    log.warning(`Unset Message Callback Was Run`);
   };
 
-  let close_callback = () => {};
+  let close_callback = () => {
+    log.warning(`Unset Close Callback Was Run`);
+  };
 
   let heartbeatTimeout = null;
 
   const setHeartbeatTimeout = () => {
     clearTimeout(heartbeatTimeout);
     heartbeatTimeout = setTimeout(() => {
-      log.info('Heartbeat timeout');
+      log.verbose('Heartbeat Timeout');
       socket.destroy();
-    }, hb_int * 2);
+    }, hb_int * process.env.HB_TIMEOUT_FACTOR);
   };
 
   setHeartbeatTimeout();
@@ -46,7 +50,9 @@ const createDevice = (socket, hb_int) => {
     },
     onMessage: (message) => {
       if (message === 'HEARTBEAT') {
-        // log.info('Heartbeat renew');
+        log.debug(
+          `Heartbeat Recieved From ${socket.remoteAddress}:${socket.remotePort}`
+        );
         setHeartbeatTimeout();
         return;
       }
@@ -54,12 +60,13 @@ const createDevice = (socket, hb_int) => {
     },
     close: () => {
       socket.destroy();
-      close_callback();
+      this.onClose();
     },
     setCloseCallback: (callback) => {
       close_callback = callback;
     },
     onClose: () => {
+      log.verbose(`Device Closed ${socket.remoteAddress}:${socket.remotePort}`);
       close_callback();
     },
     send: (message) => {
@@ -69,7 +76,9 @@ const createDevice = (socket, hb_int) => {
 };
 
 const onConnection = (socket) => {
-  log.info(`connection from ${socket.remoteAddress}:${socket.remotePort}`);
+  log.verbose(
+    `Recieved Connection ${socket.remoteAddress}:${socket.remotePort}`
+  );
 
   let route = null;
   let hb_int = null;
@@ -122,7 +131,7 @@ const onConnection = (socket) => {
   });
 
   socket.on('close', () => {
-    device.onClose();
+    if (device) device.onClose();
   });
 };
 

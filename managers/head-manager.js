@@ -2,18 +2,18 @@ const EventManager = require('./event-manager');
 const ActionManager = require('./action-manager');
 const SocketManager = require('./tcp-manager');
 const { LOOKUP_FLAG } = require('../constants');
+const log = require('../logging/loggers/manager-logger')('HeadManager');
 
 const heads = [];
 
 module.exports.register = (head) => {
-  // console.log('init', head.name);
+  log.verbose(`Register Head ${head.name}`);
   Object.values(head.events).forEach((event) => {
     EventManager.register(head.name, event);
   });
   Object.values(head.actions).forEach((action) => {
     ActionManager.register(head.name, action);
   });
-
   Object.values(head.sockets).forEach((socket) => {
     SocketManager.register(socket);
   });
@@ -28,7 +28,8 @@ module.exports.getValue = (raw, payload) => {
   // is a payload value
   const name = raw.substring(1);
   if (!(name in payload)) {
-    // deal with bad input
+    log.error(`Payload value doesn't exist ${name}`);
+    return null;
   }
 
   return payload[name];

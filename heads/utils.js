@@ -1,7 +1,7 @@
 const Manager = require('../managers/head-manager');
 const Constants = require('../constants');
 
-const log = require('../loggers/head-logger')('Utils');
+const log = require('../logging/loggers/head-logger')('Utils');
 
 const data_cache = {};
 

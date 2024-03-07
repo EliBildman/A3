@@ -1,5 +1,5 @@
 const { Transport } = require('winston');
-const socket_manager = require('../managers/socket-manager');
+const socket_manager = require('../../managers/socket-manager');
 
 class SocketTransport extends Transport {
   constructor(opts) {

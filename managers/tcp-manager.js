@@ -1,4 +1,4 @@
-const log = require('../loggers/manager-logger')('TCPManager');
+const log = require('../logging/loggers/manager-logger')('TCPManager');
 
 const routes = {};
 

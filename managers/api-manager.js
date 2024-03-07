@@ -1,7 +1,7 @@
 const ActionManager = require('./action-manager');
 const DB = require('../db');
 
-const log = require('../loggers/manager-logger')('APIManager');
+const log = require('../logging/loggers/manager-logger')('APIManager');
 
 const TRIGGER_PREFIX = 'run';
 const MAX_DEPTH = 20;
@@ -39,12 +39,13 @@ const loadPages = () => {
   });
 };
 
+// (id: string, payload?: Object, depth?: int)
 module.exports.runFragment = async (id, payload, depth) => {
-  log.debug(`Run frgament ${id}, payload ${JSON.stringify(payload)}`);
+  log.verbose('Run Frgament', { id, payload });
   if (!payload) payload = {};
   if (!depth) depth = 0;
   if (depth > MAX_DEPTH) {
-    console.log(
+    log.error(
       `Blocked fragment ${id}: max trigger call stack size reached - is there an infinite loop?`
     );
     return;
@@ -66,6 +67,10 @@ module.exports.runFragment = async (id, payload, depth) => {
       };
     });
 
+    log.verbose('Run Action', {
+      head: info.action.head,
+      name: info.action.name,
+    });
     await action.run(triggers, payload, info.params);
   }
 };

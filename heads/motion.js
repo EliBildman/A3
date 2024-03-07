@@ -1,6 +1,7 @@
 const Manager = require('../managers/head-manager');
 const Constants = require('../constants');
-const log = require('../loggers/head-logger')('Motion');
+const log = require('../logging/loggers/head-logger')('Motion');
+const Stats = require('../managers/stats-manager');
 
 let devices = {};
 
@@ -126,4 +127,9 @@ const head = {
 
 module.exports.initialize = () => {
   Manager.register(head);
+
+  Stats.onLog((stats) => {
+    if (!stats.num_devices) stats.num_devices = 0;
+    stats.num_devices += Object.keys(devices).length;
+  });
 };

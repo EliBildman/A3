@@ -1,6 +1,7 @@
 const Manager = require('../managers/head-manager');
 const Constants = require('../constants');
-const log = require('../loggers/head-logger')('Keypad');
+const log = require('../logging/loggers/head-logger')('Keypad');
+const Stats = require('../managers/stats-manager');
 
 let devices = {};
 
@@ -76,4 +77,11 @@ const head = {
 
 module.exports.initialize = () => {
   Manager.register(head);
+
+  Stats.onLog((stats) => {
+    const num_keypads = Math.floor(Math.random() * 5); //Object.keys(devices).length;
+    if (!stats.num_devices) stats.num_devices = 0;
+    stats.num_devices += num_keypads;
+    stats.num_keypads = num_keypads;
+  });
 };

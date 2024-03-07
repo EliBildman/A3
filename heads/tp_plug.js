@@ -1,8 +1,9 @@
 const Manager = require('../managers/head-manager');
 const Constants = require('../constants');
 const { Client } = require('tplink-smarthome-api');
+const Stats = require('../managers/stats-manager');
 
-const log = require('../loggers/head-logger')('TpPlug');
+const log = require('../logging/loggers/head-logger')('TpPlug');
 
 const plugs = {};
 
@@ -119,5 +120,12 @@ module.exports.initialize = () => {
       plugs[device.alias] = device;
       device.storedState = false; // initial store
     }
+  });
+
+  Stats.onLog((stats) => {
+    const num_plugs = Math.floor(Math.random() * 5); //Object.keys(plugs).length;
+    if (!stats.num_devices) stats.num_devices = 0;
+    stats.num_devices += num_plugs;
+    stats.num_plugs = num_plugs;
   });
 };

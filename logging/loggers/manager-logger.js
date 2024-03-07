@@ -1,21 +1,14 @@
 const { createLogger, format, transports } = require('winston');
-const { SocketTransport } = require('./socket-transport');
+const { SocketTransport } = require('../transports/socket-transport');
+const { MongoTransport } = require('../transports/mongo-transport');
 
-//exports catagories of loggers as functions that produce given logger
 module.exports = (name) => {
   return createLogger({
     level: process.env.LOG_LEVEL,
-    defaultMeta: { category: 'head' },
+    defaultMeta: { category: 'MANAGER' },
     transports: [
-      // new transports.File({
-      //   format: format.combine(
-      //     format.label({ label: name, message: false }),
-      //     format.timestamp({ format: 'MM:DD:YYYY HH:mm:ss' }),
-      //     format.json()
-      //   ),
-      //   filename: `./${process.env.LOG_FILE}`,
-      // }),
       new transports.Console({
+        level: process.env.LOG_LEVEL,
         format: format.combine(
           format.label({ label: name }),
           format.timestamp({
@@ -27,6 +20,7 @@ module.exports = (name) => {
         ),
       }),
       new SocketTransport({
+        level: process.env.LOG_LEVEL,
         format: format.combine(
           format.label({ label: name }),
           format.timestamp({
@@ -35,6 +29,14 @@ module.exports = (name) => {
           format.printf(
             (log) => `${log.timestamp} [${log.label}] ${log.message}`
           )
+        ),
+      }),
+      new MongoTransport({
+        level: 'silly', // perma silly, get everything
+        format: format.combine(
+          format.label({ label: name, message: false }),
+          format.timestamp(),
+          format.json()
         ),
       }),
     ],

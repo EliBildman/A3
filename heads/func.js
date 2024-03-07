@@ -1,6 +1,6 @@
 const Manager = require('../managers/head-manager');
 const Constants = require('../constants');
-const log = require('../loggers/head-logger')('Func');
+const log = require('../logging/loggers/head-logger')('Func');
 
 // ----------------- EVENTS ----------------- //
 
