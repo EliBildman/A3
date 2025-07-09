@@ -2,6 +2,8 @@
 
 A3 is a Node.js-based smart home automation system that uses a modular architecture to control and monitor IoT devices. The system is built around a "head" concept where each module handles specific device types and operations.
 
+![Screenshot 2025-07-08 at 20-08-27 A3](https://github.com/user-attachments/assets/36b2b10c-7b40-4aa4-a631-6a640906398a)
+
 ## Device Libraries
 [A3Device](https://github.com/EliBildman/A3Device) for ESP8266
 
